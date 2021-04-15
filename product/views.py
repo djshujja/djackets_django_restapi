@@ -44,7 +44,8 @@ class CategoryDetail(APIView):
 
 @api_view(["POST"])
 def search(request):
-	query = request.data.get('query', '')
+	query = request.data.get('query')
+	print("Query down below: ")
 	print(query)
 	if query:
 		products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query) )
