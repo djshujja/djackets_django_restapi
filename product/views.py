@@ -45,12 +45,19 @@ class CategoryDetail(APIView):
 @api_view(["POST"])
 def search(request):
 	query = request.data.get('query')
-	print("Query down below: ")
-	print(query)
 	if query:
 		products = Product.objects.filter(Q(name__icontains=query) | Q(description__icontains=query) )
 		serializer = ProductSerializer(products, many=True)
 		return Response(serializer.data)
-
 	else:
 		return Response({"products": []}) 
+
+
+@api_view(["POST"])
+def inc_price(request):
+	product_slug = request.data.get('product_slug')
+	db_product = Product.objects.get(slug=product_slug)
+	db_product.price = 0.00
+	db_product.save()
+	seralizer = ProductSerializer(db_product)
+	return Response(seralizer.data)
