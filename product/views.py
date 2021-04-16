@@ -41,15 +41,18 @@ class CategoryDetail(APIView):
 		serializer = CategorySerializer(category)
 		return Response(serializer.data)
 
+
+
+
 class AllOrders(APIView):
 	def get_object(self):
 		try:
-			return Order.objects.get()
+			return Order.objects.all()
 		except Order.DoesNotExist:
 			raise Http404
 	def get(self, request, format=None):
 		orders = self.get_object()
-		serializer = OrderSerializer(orders)
+		serializer = OrderSerializer(orders, many=True)
 		return Response(serializer.data)
 
 
@@ -71,12 +74,32 @@ def inc_price(request):
 	db_product = Product.objects.get(slug=product_slug)
 	db_product.price = 0.00
 	db_product.save()
-	seralizer = ProductSerializer(db_product)
-	return Response(seralizer.data)
+	serializer = ProductSerializer(db_product)
+	return Response(serializer.data)
 
-# @api_view(["GET"])
-# def all_order(request):
-# 	orders = Order.objects.all()
-# 	return orders
-# 	serializer = OrderSerializer(orders)
-# 	return Response(serializer.data)
+
+@api_view(['POST'])
+def add_category(request):
+	name = request.data.get('name')
+	slug = request.data.get('slug')
+	price = request.data.get('price')
+	new_category = Category.objects.create(
+		name = name,
+		slug = slug,
+		)
+	new_category.save()
+	serializer = CategorySerializer(new_category)
+	return Response(serializer.data)
+
+@api_view(['GET'])
+def all_categories(request):
+	categories = Category.objects.all()
+	serializer = CategorySerializer(categories,many=True)
+	return Response(serializer.data)
+
+
+'''
+@api_view(["POST"])
+def place_order(request):
+'''
+
