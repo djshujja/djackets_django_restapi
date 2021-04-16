@@ -2,6 +2,10 @@
 
 ## Product/Category relational DB API
 
+### master => Simple CRUD
+### point-of-sale => RDBMS CRUD
+
+
 Just practicing django-rest-framework.
 Projects got auth using djsoer, image's thumnail generation and very basic Create & Read API with very basic endpoints. 
 
