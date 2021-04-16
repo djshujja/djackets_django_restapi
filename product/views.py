@@ -4,8 +4,8 @@ from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import ProductSerializer, CategorySerializer
-from .models import Product, Category
+from .serializers import ProductSerializer, CategorySerializer, OrderSerializer
+from .models import Product, Category, Order
 
 
 
@@ -41,6 +41,18 @@ class CategoryDetail(APIView):
 		serializer = CategorySerializer(category)
 		return Response(serializer.data)
 
+class AllOrders(APIView):
+	def get_object(self):
+		try:
+			return Order.objects.get()
+		except Order.DoesNotExist:
+			raise Http404
+	def get(self, request, format=None):
+		orders = self.get_object()
+		serializer = OrderSerializer(orders)
+		return Response(serializer.data)
+
+
 
 @api_view(["POST"])
 def search(request):
@@ -61,3 +73,10 @@ def inc_price(request):
 	db_product.save()
 	seralizer = ProductSerializer(db_product)
 	return Response(seralizer.data)
+
+# @api_view(["GET"])
+# def all_order(request):
+# 	orders = Order.objects.all()
+# 	return orders
+# 	serializer = OrderSerializer(orders)
+# 	return Response(serializer.data)

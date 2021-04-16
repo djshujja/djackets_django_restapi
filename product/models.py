@@ -2,6 +2,8 @@ from io import BytesIO
 from PIL import Image
 from django.core.files import File
 from django.db import models
+from django.contrib.auth.models import User
+import secrets
 
 class Category(models.Model):
 	name = models.CharField(max_length=255)
@@ -21,10 +23,12 @@ class Product(models.Model):
 	name = models.CharField(max_length=255)
 	slug = models.SlugField()
 	description = models.TextField(blank=True, null=True)
+	stock = models.IntegerField(default=0)
 	price = models.DecimalField(max_digits=6, decimal_places=2)
 	image = models.ImageField(upload_to="uploads/", blank=True, null=True)
 	thumbnail = models.ImageField(upload_to="uploads/", blank=True, null=True)
 	date_added = models.DateTimeField(auto_now_add=True)
+
 
 	class Meta:
 		ordering = ('-date_added',)
@@ -60,6 +64,27 @@ class Product(models.Model):
 		img.save(thumb_io, 'JPEG', quality=85)
 		thumbnail = File(thumb_io, name=image.name)
 		return thumbnail
+
+
+
+class OrderProduct(models.Model):
+	product = models.OneToOneField(Product, on_delete=models.CASCADE)
+	qty = models.IntegerField(default=1)
+
+class Order(models.Model):
+	order_id = models.CharField(default=secrets.token_hex(5), max_length=25)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	bill = models.DecimalField(max_digits=6, decimal_places=2)
+	status = models.BooleanField(default=False)
+	products = models.ManyToManyField(OrderProduct)
+	date = models.DateTimeField(auto_now_add=True)
+
+	class Meta:
+		ordering = ('-date',)
+
+	def __str__(self):
+		return self.order_id
+
 
 
 
