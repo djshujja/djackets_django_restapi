@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import ProductSerializer, CategorySerializer, OrderSerializer
-from .models import Product, Category, Order
+from .models import Product, Category, Order, OrderProduct
 
 
 
@@ -101,6 +101,31 @@ def all_categories(request):
 	return Response(serializer.data)
 
 
-# @api_view(["POST"])
-# def place_order(request):
+@api_view(["POST"])
+def place_order(request):
+	products = request.data.get('products')
+	bill = 0
+	ordered_products = ()
+	for product in products:
+		db_product = Product.objects.get(id=product['id'])
+		db_product.stock = db_product.stock - product['qty']
+		bill += db_product.price * product['qty'] 
 
+	obj = Order(
+		bill= bill
+		)
+	obj.save()
+
+	for product in products:
+		op = OrderProduct(product=db_product, qty=product['qty'])
+		op.save()
+		obj.products.add(op)
+		obj.save()
+		# new_op = OrderProduct.objects.get(id=op.id)
+		# obj.products.add(new_op)
+		# obj.save()
+
+
+	serializer = OrderSerializer(obj)
+	return Response(serializer.data)
+	

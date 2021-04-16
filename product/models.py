@@ -8,7 +8,6 @@ import secrets
 class Category(models.Model):
 	name = models.CharField(max_length=255)
 	slug = models.SlugField()
-
 	class Meta:
 		ordering = ('name',)
 
@@ -28,7 +27,6 @@ class Product(models.Model):
 	image = models.ImageField(upload_to="uploads/", blank=True, null=True)
 	thumbnail = models.ImageField(upload_to="uploads/", blank=True, null=True)
 	date_added = models.DateTimeField(auto_now_add=True)
-
 
 	class Meta:
 		ordering = ('-date_added',)
@@ -65,18 +63,16 @@ class Product(models.Model):
 		thumbnail = File(thumb_io, name=image.name)
 		return thumbnail
 
-
-
 class OrderProduct(models.Model):
-	product = models.OneToOneField(Product, on_delete=models.CASCADE)
+	product = models.ForeignKey(Product, on_delete=models.CASCADE, primary_key=False)
 	qty = models.IntegerField(default=1)
 
 class Order(models.Model):
 	order_id = models.CharField(default=secrets.token_hex(5), max_length=25)
-	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	# user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
 	bill = models.DecimalField(max_digits=6, decimal_places=2)
 	status = models.BooleanField(default=False)
-	products = models.ManyToManyField(OrderProduct)
+	products = models.ManyToManyField(OrderProduct,null=True)
 	date = models.DateTimeField(auto_now_add=True)
 
 	class Meta:

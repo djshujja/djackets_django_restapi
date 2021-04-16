@@ -7,6 +7,7 @@ urlpatterns = [
 	path('new-category/', views.add_category),
 	path('categories/', views.all_categories),
 	path('latest-products/', views.LatestProductsList.as_view()),
+	path('products/place-order/',views.place_order),
 	path('products/search/', views.search),
 	path('products/inc-price/', views.inc_price),
 	path('products/<slug:category_slug>/<slug:product_slug>/', views.ProductDetail.as_view()),
