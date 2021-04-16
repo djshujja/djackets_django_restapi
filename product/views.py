@@ -1,6 +1,6 @@
 # from django.shortcuts import render
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -88,8 +88,11 @@ def add_category(request):
 		slug = slug,
 		)
 	new_category.save()
-	serializer = CategorySerializer(new_category)
-	return Response(serializer.data)
+	return JsonResponse({
+		"message":"succesfully created!"
+		})
+	# serializer = CategorySerializer(new_category)
+	# return Response(serializer.data)
 
 @api_view(['GET'])
 def all_categories(request):
@@ -98,8 +101,6 @@ def all_categories(request):
 	return Response(serializer.data)
 
 
-'''
-@api_view(["POST"])
-def place_order(request):
-'''
+# @api_view(["POST"])
+# def place_order(request):
 
